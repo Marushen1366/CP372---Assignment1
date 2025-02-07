@@ -1,7 +1,7 @@
 import socket
 
 HOST = 'localhost' #hostname that refers to the machine the code is running on 
-PORT = 3500 # port number for the server and client
+PORT = 3600 # port number for the server and client
 
 def start_client(): 
     # starting the client and we are connecting to the server
@@ -20,7 +20,22 @@ def start_client():
                 break 
 
             response = client_socket.recv(1024).decode()
-            print(f"Server: {response}") #receiving the server response at a maximum of 1024 bytes and printing it
+
+            if message.lower().startswith("get "):
+                file_name = message[4:].strip()
+                if "ERROR" in response:
+                    print(response)
+                else:
+                    with open(file_name, "wb") as file:
+                        while True: 
+                            data = client_socket.recv(1024)
+                            if data.endswith(b"EOF"):
+                              file.write(data[:-3])
+                              break
+                            file.write(data)
+                    print(f"The File {file_name}.")
+            else:
+               print(f"Server: {response}") #receiving the server response at a maximum of 1024 bytes and printing it
 
     except ConnectionResetError:
         print("Server forcibly closed the connection.") # handle case for when the server disconnects randomly
