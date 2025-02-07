@@ -27,12 +27,7 @@ def start_client():
                     print(response)
                 else:
                     with open(file_name, "wb") as file:
-                        while True: 
-                            data = client_socket.recv(1024)
-                            if data.endswith(b"EOF"):
-                              file.write(data[:-3])
-                              break
-                            file.write(data)
+                        file.write(response.encode())
                     print(f"The File {file_name}.")
             else:
                print(f"Server: {response}") #receiving the server response at a maximum of 1024 bytes and printing it

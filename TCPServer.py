@@ -31,7 +31,7 @@ def handle_client(client_socket, client_name, client_address):
 
     try:
         while True:
-            message = client_socket.recv(1024).decode() # receives  from the client, a max of 1024 bytes
+            message = client_socket.recv(1024).decode() # receives  from the client, a max of 4096 bytes
             if not message:
                 break  # if no message is receieved the client disconnected
 
@@ -64,12 +64,9 @@ def handle_client(client_socket, client_name, client_address):
 
                if os.path.exists(file_path) and os.path.isfile(file_path):
                     with open(file_path, "rb") as file:
-                         while True:
-                              chunk = file.read(1024)
-                              if not chunk:
-                                   break
-                              client_socket.send(chunk)
-                    client_socket.send(b"EOF")
+                        file_content = file.read()
+
+                    client_socket.sendall(file_content)  # Send file content
                else:
                     error_message = f"ERROR: File '{file_name}' not found."
                     client_socket.send(error_message.encode())
