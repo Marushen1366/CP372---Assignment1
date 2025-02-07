@@ -10,6 +10,11 @@ client_count = 0 #number of clients
 lock = threading.Lock()  #thread safety
 FILE_DIRECTORY = 'server_files'
 
+def log_event(message):
+    """Logs important server events with timestamps."""
+    timestamp = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
+    print(f"{timestamp} {message}")
+
 """
 Create a function that handles the client connections
 parameters: client_name, client_address, client_socket
@@ -29,6 +34,8 @@ def handle_client(client_socket, client_name, client_address):
             'disconnected_at': None
         }
 
+    log_event(f"{client_name} connected from {client_address}")
+
     try:
         while True:
             message = client_socket.recv(1024).decode() # receives  from the client, a max of 4096 bytes
@@ -37,7 +44,7 @@ def handle_client(client_socket, client_name, client_address):
 
             #client commands
             if message.lower() == "exit":
-                print(f"{client_name} Disconnected.")
+                log_event(f"{client_name} disconnected.")
                 break  # Exit request
 
             elif message.lower() == "status":
@@ -63,6 +70,7 @@ def handle_client(client_socket, client_name, client_address):
                file_path = os.path.join(FILE_DIRECTORY, file_name)
 
                if os.path.exists(file_path) and os.path.isfile(file_path):
+                    log_event(f"{client_name} requested file: {file_name}")
                     with open(file_path, "rb") as file:
                         file_content = file.read()
 
@@ -76,7 +84,7 @@ def handle_client(client_socket, client_name, client_address):
                 client_socket.send(response.encode()) # this echos the messages back to the client with an acnkowledgement added
 
     except ConnectionResetError:
-        print(f"{client_name} disconnected unexpectedly.") #for random discconections such as a force close
+        log_event(f"{client_name} disconnected unexpectedly.")
 
     finally:
         # find out the disconnection time then save it
@@ -97,7 +105,7 @@ def start_server():
     server_socket.bind(('localhost', 3600)) #bind it to the host
     server_socket.listen(MAX_CLIENTS)
 
-    print(f"Server is listening...")
+    log_event("Server started and listening...")
 
     while True:
         if client_count < MAX_CLIENTS: # make sure that the client count does not exceed max clients
@@ -113,7 +121,7 @@ def start_server():
             client_thread = threading.Thread(target=handle_client, args=(client_socket, client_name, client_address))
             client_thread.start()
         else: #if the max amount of clients is reached disconnect them
-            print("Max clients reached.")
+            log_event("Max clients reached. Rejecting new connection.")
             temp, _ = server_socket.accept()
             temp.send("Server is full. Try again later.".encode())
             temp.close()
