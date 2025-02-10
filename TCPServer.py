@@ -23,14 +23,18 @@ client_name is the clients name
 client_socket shows the connection between the server
 and the client, sends and receives messages
 """
-def handle_client(client_socket, client_name, client_address):
+
+#def get_timestamp():
+    #return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+def manage_client(client_socket, client_name, client_address):
     global clients # make it global so it can be assccessed outside the function
 
     # find out connection time of the client
     with lock:
         clients[client_name] = {
             'address': client_address,
-            'connected_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'connected_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
             'disconnected_at': None
         }
 
@@ -38,7 +42,7 @@ def handle_client(client_socket, client_name, client_address):
 
     try:
         while True:
-            message = client_socket.recv(1024).decode() # receives  from the client, a max of 4096 bytes
+            message = client_socket.recv(1024).decode() # receives  from the client, a max of 1024 bytes
             if not message:
                 break  # if no message is receieved the client disconnected
 
@@ -89,11 +93,10 @@ def handle_client(client_socket, client_name, client_address):
     finally:
         # find out the disconnection time then save it
         with lock:
-            clients[client_name]['disconnected_at'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
+            clients[client_name]['disconnected_at'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S") 
+            global client_count
+            client_count -= 1
         client_socket.close()
-        #print(f"{client_name} disconnected.") #closing the client socket i dont think we need this it doubles the message
-
 
 def start_server():
     #Starts the server
@@ -118,7 +121,7 @@ def start_server():
             print(f"{client_name} connected from {client_address}")
 
             # start new threads for each client
-            client_thread = threading.Thread(target=handle_client, args=(client_socket, client_name, client_address))
+            client_thread = threading.Thread(target=manage_client, args=(client_socket, client_name, client_address))
             client_thread.start()
         else: #if the max amount of clients is reached disconnect them
             log_event("Max clients reached. Rejecting new connection.")

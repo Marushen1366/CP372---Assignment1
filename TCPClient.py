@@ -6,7 +6,7 @@ PORT = 3600 # port number for the server and client
 def start_client(): 
     # starting the client and we are connecting to the server
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((HOST, PORT)) # creating a TCP socket and connecting it to the server at PORT 3500 on our local machine
+    client_socket.connect((HOST, PORT)) # creating a TCP socket and connecting it to the server at PORT 3600 on our local machine
 
     print("Connected to server. Type messages to send. Type 'status' to get active connections. Type 'exit' to disconnect.")
 
