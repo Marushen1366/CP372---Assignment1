@@ -1,3 +1,19 @@
+"""
+-----------------------------------------------------------
+TCPServer
+---------------------------------------------------------
+Author: Ashvinan Sivasambu
+Id: 169021867
+Email: siva1867
+-----------------------------------------------------------
+Author: Marushen Baskaran   
+Id: 169019862
+Email: bask9862@mylaurier.ca
+-----------------------------------------------------------
+"""
+
+
+
 import socket
 import threading
 import os
@@ -76,7 +92,7 @@ def manage_client(client_socket, client_name, client_address):
                if os.path.exists(file_path) and os.path.isfile(file_path):
                     log_event(f"{client_name} requested file: {file_name}")
                     with open(file_path, "rb") as file:
-                        file_content = file.read()
+                        file_content = file.read() # we implemented a max
 
                     client_socket.sendall(file_content)  # Send file content
                else:

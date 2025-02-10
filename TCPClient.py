@@ -1,3 +1,18 @@
+"""
+-----------------------------------------------------------
+TCPClient
+---------------------------------------------------------
+Author: Ashvinan Sivasambu
+Id: 169021867
+Email: siva1867
+-----------------------------------------------------------
+Author: Marushen Baskaran   
+Id: 169019862
+Email: bask9862@mylaurier.ca
+-----------------------------------------------------------
+"""
+
+
 import socket
 
 HOST = 'localhost' #hostname that refers to the machine the code is running on 
